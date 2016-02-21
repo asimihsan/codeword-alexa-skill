@@ -13,9 +13,9 @@ def lambda_handler(event, context):
     prevent someone else from configuring a skill that sends requests to this
     function.
     """
-    # if (event['session']['application']['applicationId'] !=
-    #         "amzn1.echo-sdk-ams.app.[unique-value-here]"):
-    #     raise ValueError("Invalid Application ID")
+    if (event['session']['application']['applicationId'] !=
+            "amzn1.echo-sdk-ams.app.c00ae347-78bf-4165-a1b1-6f302b5c6180"):
+        raise ValueError("Invalid Application ID")
 
     if event['request']['type'] == "LaunchRequest":
         return on_launch(event['request'], event['session'])
@@ -38,20 +38,18 @@ def on_launch(launch_request, session):
 
 def get_codeword_response(current_codeword):
     session_attributes = {}
-    card_title = "Get Codeword"
     speech_output = current_codeword
     # If the user either does not reply to the welcome message or says something
     # that is not understood, they will be prompted again with this text.
     reprompt_text = "Please try again by saying 'Alexa, ask codeword'"
-    should_end_session = True
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+        speech_output, reprompt_text))
 
 
 # --------------- Helpers that build all of the responses ----------------------
 
 
-def build_speechlet_response(title, output, reprompt_text, should_end_session):
+def build_speechlet_response(output, reprompt_text):
     return {
         'outputSpeech': {
             'type': 'PlainText',
@@ -59,8 +57,8 @@ def build_speechlet_response(title, output, reprompt_text, should_end_session):
         },
         'card': {
             'type': 'Simple',
-            'title': 'SessionSpeechlet - ' + title,
-            'content': 'SessionSpeechlet - ' + output
+            'title': 'Your code phrase',
+            'content': output
         },
         'reprompt': {
             'outputSpeech': {
@@ -68,7 +66,7 @@ def build_speechlet_response(title, output, reprompt_text, should_end_session):
                 'text': reprompt_text
             }
         },
-        'shouldEndSession': should_end_session
+        'shouldEndSession': True
     }
 
 
